@@ -1,12 +1,6 @@
-// Action types of the library
-const actionTypes = {};
-
 // Format the elements
-[
-  'API_SET_ENDPOINT_HOST',
-  'API_SET_ENDPOINT_PATH',
-  'API_SET_HEADERS',
-  'API_SET_HEADER',
+export default [
+  'API_SET_AXIOS_CONFIG',
   'API_WILL_CREATE',
   'API_CREATED',
   'API_CREATE_FAILED',
@@ -19,6 +13,10 @@ const actionTypes = {};
   'API_WILL_DELETE',
   'API_DELETED',
   'API_DELETE_FAILED'
-].forEach(action => { actionTypes[action] = action; });
-
-export default actionTypes;
+].reduce(
+  (actionTypes, action) => {
+    actionTypes[action] = action;
+    return actionTypes
+  },
+  {}
+);

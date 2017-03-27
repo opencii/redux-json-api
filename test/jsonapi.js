@@ -6,16 +6,10 @@ import { createAction } from 'redux-actions';
 import expect from 'expect';
 import {
   reducer,
-  setHeaders,
-  setHeader,
-  setEndpointHost,
-  setEndpointPath,
+  //setAxiosConfig,
   IS_DELETING,
   IS_UPDATING
 } from '../src/jsonapi';
-
-import fetchMock from 'fetch-mock';
-import { apiRequest } from '../src/utils';
 
 const apiCreated = createAction('API_CREATED');
 const apiRead = createAction('API_READ');
@@ -27,12 +21,7 @@ const apiWillDelete = createAction('API_WILL_DELETE');
 
 const state = {
   endpoint: {
-    host: null,
-    path: null,
-    headers: {
-      'Content-Type': 'application/vnd.api+json',
-      Accept: 'application/vnd.api+json'
-    }
+    axiosConfig: {}
   },
   users: {
     data: [
@@ -467,7 +456,7 @@ describe('Updating resources', () => {
     const userToUpdate = state.users.data[0];
     const stateWithResourceType = reducer(stateWithoutUsersResource, apiWillUpdate(userToUpdate));
     const updatedState = reducer(stateWithResourceType, apiUpdated(updatedUser));
-    expect(updatedState.users.data[0]).toEqual(updatedUser);
+    expect(updatedState.users.data[0]).toEqual(updatedUser.data);
   });
 });
 
@@ -524,6 +513,7 @@ describe('Endpoint values', () => {
     });
   });
 
+  /* are thise test stil relevant when using axois?
   it('should update provided header, such as an access token', () => {
     const at = 'abcdef0123456789';
     const header = { Authorization: `Bearer ${at}` };
@@ -543,55 +533,25 @@ describe('Endpoint values', () => {
     expect(updatedState.endpoint.headers).toEqual(headers);
   });
 
-  it('should update to provided endpoint host and path', () => {
-    const host = 'https://api.example.com';
-    const path = '/api/v1';
+ */
 
-    expect(state.endpoint.host).toNotEqual(host);
-    const stateWithHost = reducer(state, setEndpointHost(host));
-    expect(stateWithHost.endpoint.host).toEqual(host);
-
-    expect(state.endpoint.path).toNotEqual(path);
-    const stateWithPath = reducer(state, setEndpointPath(path));
-    expect(stateWithPath.endpoint.path).toEqual(path);
-  });
-});
-
-describe('Invalidating flag', () => {
-  it('should set before delete', () => {
-    const updatedState = reducer(state, apiWillDelete(state.users.data[0]));
-    expect(updatedState.users.data[0].isInvalidating).toEqual(IS_DELETING);
-  });
-
-  it('should set before update', () => {
-    const updatedState = reducer(state, apiWillUpdate(state.users.data[0]));
-    expect(updatedState.users.data[0].isInvalidating).toEqual(IS_UPDATING);
-  });
-
-  it('should be removed after update', () => {
-    const updatedState = reducer(
-      reducer(state, apiWillUpdate(state.users.data[0])),
-      apiUpdated(state.users)
-    );
-    expect(updatedState.users.data[0].isInvalidating).toNotExist();
-  });
-});
-
-describe('apiRequest', () => {
-  it('should parse the response body on success', () => {
-    fetchMock.mock('*', { status: 200, body: { data: 1 }, headers: { 'Content-Type': 'application/json' } });
-    return apiRequest('fakeurl').then((data) => {
-      expect(data).toEqual({ data: 1 });
+  describe('Invalidating flag', () => {
+    it('should set before delete', () => {
+      const updatedState = reducer(state, apiWillDelete(state.users.data[0]));
+      expect(updatedState.users.data[0].isInvalidating).toEqual(IS_DELETING);
     });
-  });
 
-  it('should return Body object when response is 204', () => {
-    fetchMock.restore();
-    fetchMock.mock('*', { status: 204, body: null });
+    it('should set before update', () => {
+      const updatedState = reducer(state, apiWillUpdate(state.users.data[0]));
+      expect(updatedState.users.data[0].isInvalidating).toEqual(IS_UPDATING);
+    });
 
-    return apiRequest('fakeurl').then((data) => {
-      expect(data.statusText).toEqual('No Content');
-      expect(data.status).toEqual(204);
+    it('should be removed after update', () => {
+      const updatedState = reducer(
+        reducer(state, apiWillUpdate(state.users.data[0])),
+        apiUpdated(state.users)
+      );
+      expect(updatedState.users.data[0].isInvalidating).toNotExist();
     });
   });
 });

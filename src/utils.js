@@ -1,24 +1,41 @@
+import axios from 'axios';
+import createError from 'axios/lib/core/createError';
+import Imm from 'immutable';
+
 export const jsonContentTypes = [
   'application/json',
   'application/vnd.api+json'
 ];
 
+const hasValidContentType = response => jsonContentTypes.some(
+  contentType => response.headers['content-type'].indexOf(contentType) > -1
+);
+
 export const noop = () => {};
 
 export const apiRequest = (url, options = {}) => {
-  return fetch(url, options)
+  const allOptions = Imm.fromJS(options)
+    .set('url', url)
+    .setIn(['headers', 'Accept'], 'application/vnd.api+json')
+    .setIn(['headers', 'Content-Type'], 'application/vnd.api+json')
+    .toJS();
+
+  return axios(allOptions)
     .then(res => {
-      if (res.status >= 200 && res.status < 300) {
-        if (res.status === 204) {
-          return res;
-        } else if (jsonContentTypes.some(contentType => res.headers.get('Content-Type').indexOf(contentType) > -1)) {
-          return res.json();
-        }
+      if (res.status === 204) {
+        return res;
       }
 
-      const e = new Error(res.statusText);
-      e.response = res;
-      throw e;
+      if (hasValidContentType(res) === false) {
+        throw createError(
+          'Invalid Content-Type in response',
+          res.config,
+          null,
+          res
+        );
+      }
+
+      return res.data;
     });
 };
 
