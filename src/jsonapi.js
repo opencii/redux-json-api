@@ -10,7 +10,7 @@ import {
   setIsInvalidatingForExistingResource,
   ensureResourceTypeInState
 } from './state-mutation';
-import { apiRequest } from './utils';
+import { apiRequest, getPaginationUrl } from './utils';
 import {
   API_SET_AXIOS_CONFIG,
   API_WILL_CREATE,
@@ -51,7 +51,6 @@ const apiDeleted = createAction(API_DELETED);
 const apiDeleteFailed = createAction(API_DELETE_FAILED);
 
 // Actions
-
 export const createResource = (resource) => {
   return (dispatch, getState) => {
     dispatch(apiWillCreate(resource));
@@ -81,6 +80,27 @@ export const createResource = (resource) => {
   };
 };
 
+class ApiResponse {
+  constructor(response, dispatch, nextUrl, prevUrl) {
+    this.body = response;
+    this.dispatch = dispatch;
+    this.nextUrl = nextUrl;
+    this.prevUrl = prevUrl;
+    this.loadNext = this.loadNext.bind(this);
+    this.loadPrev = this.loadPrev.bind(this);
+  }
+
+  /* eslint-disable */
+  loadNext() {
+    return this.dispatch(readEndpoint(this.nextUrl));
+  }
+
+  prevNext() {
+    return this.dispatch(readEndpoint(this.prevUrl));
+  }
+  /* eslint-enable */
+}
+
 export const readEndpoint = (endpoint, {
   options = {
     indexLinks: undefined,
@@ -90,12 +110,18 @@ export const readEndpoint = (endpoint, {
     dispatch(apiWillRead(endpoint));
 
     const { axiosConfig } = getState().api.endpoint;
+    console.log(axiosConfig);
+    const { apiHost, apiPath } = axiosConfig;
 
     return new Promise((resolve, reject) => {
       apiRequest(endpoint, axiosConfig)
         .then(json => {
           dispatch(apiRead({ endpoint, options, ...json }));
-          resolve(json);
+
+          const nextUrl = getPaginationUrl(json, 'next', apiHost, apiPath);
+          const prevUrl = getPaginationUrl(json, 'prev', apiHost, apiPath);
+
+          resolve(new ApiResponse(json, dispatch, nextUrl, prevUrl));
         })
         .catch(error => {
           const err = error;
@@ -182,26 +208,6 @@ export const requireResource = (resourceType, endpoint = resourceType) => {
         .catch(reject);
     });
   };
-};
-
-export const createEntity = (...args) => {
-  console.warn('createEntity is deprecated and will be removed in v2.0 in favor of new method createResource');
-  return createResource(...args);
-};
-
-export const updateEntity = (...args) => {
-  console.warn('updateEntity is deprecated and will be removed in v2.0 in favor of new method updateResource');
-  return updateResource(...args);
-};
-
-export const deleteEntity = (...args) => {
-  console.warn('deleteEntity is deprecated and will be removed in v2.0 in favor of new method deleteResource');
-  return deleteResource(...args);
-};
-
-export const requireEntity = (...args) => {
-  console.warn('requireEntity is deprecated and will be removed in v2.0 in favor of new method requireResource');
-  return requireResource(...args);
 };
 
 // Reducers
