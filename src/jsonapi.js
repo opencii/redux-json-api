@@ -110,7 +110,6 @@ export const readEndpoint = (endpoint, {
     dispatch(apiWillRead(endpoint));
 
     const { axiosConfig } = getState().api.endpoint;
-    console.log(axiosConfig);
     const { apiHost, apiPath } = axiosConfig;
 
     return new Promise((resolve, reject) => {
@@ -273,7 +272,7 @@ export const reducer = handleActions({
 
   [API_UPDATED]: (state, { payload: resources }) => {
     const entities = Array.isArray(resources.data) ? resources.data : [resources.data];
-
+    console.log("UP UP", state.transactions.data[0]);
     const newState = updateOrInsertResourcesIntoState(
       state,
       entities.concat(resources.included || [])

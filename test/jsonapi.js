@@ -6,7 +6,6 @@ import { createAction } from 'redux-actions';
 import expect from 'expect';
 import {
   reducer,
-  //setAxiosConfig,
   IS_DELETING,
   IS_UPDATING
 } from '../src/jsonapi';
@@ -480,6 +479,7 @@ describe('Delete resources', () => {
       const stateWithTask = reducer(state, apiCreated(taskWithTransactions));
       // Update relation between transaction and task
       const stateWithTaskWithTransaction = reducer(stateWithTask, apiUpdated(transactionWithTask));
+      console.log('s', taskWithTransactions);
 
       expect(stateWithTaskWithTransaction.transactions.data[0].relationships.task.data.type).toEqual(taskWithTransactions.type);
 
