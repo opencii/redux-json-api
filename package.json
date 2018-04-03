@@ -1,6 +1,6 @@
 {
   "name": "redux-json-api",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "A bunch of Redux actions, action creators and reducers to integrate with a JSON API",
   "main": "lib/jsonapi.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dixieio/redux-json-api.git"
+    "url": "git+https://github.com/redux-json-api/redux-json-api.git"
   },
   "keywords": [
     "redux",
@@ -23,9 +23,9 @@
   "author": "Ronni Egeriis Persson <ronni@dixie.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dixieio/redux-json-api/issues"
+    "url": "https://github.com/redux-json-api/redux-json-api/issues"
   },
-  "homepage": "https://github.com/dixieio/redux-json-api#readme",
+  "homepage": "https://github.com/redux-json-api/redux-json-api#readme",
   "peerDependencies": {
     "redux-thunk": ">=1.0.0"
   },
