@@ -1,11 +1,11 @@
 {
   "name": "redux-json-api",
-  "version": "2.0.1",
+  "version": "2.0.2-beta.0",
   "description": "A bunch of Redux actions, action creators and reducers to integrate with a JSON API",
   "main": "lib/jsonapi.js",
   "scripts": {
     "build": "rimraf lib && babel ./src -d lib",
-    "test": "mocha --compilers js:babel-core/register --recursive",
+    "test": "mocha --compilers js:@babel/register --recursive",
     "test:watch": "npm test -- --watch",
     "lint": "eslint . ./",
     "prepublish": "npm run lint && npm run build"
@@ -30,16 +30,15 @@
     "redux-thunk": ">=1.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.0.0",
-    "babel-core": "^6.4.5",
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/register": "^7.6.0",
     "babel-eslint": "^5.0.0-beta6",
     "babel-loader": "^6.2.1",
-    "babel-plugin-add-module-exports": "^0.1.2",
-    "babel-plugin-transform-runtime": "^6.4.3",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13",
-    "babel-preset-stage-0": "^6.3.13",
-    "babel-runtime": "^6.3.19",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^4.0.0",
     "expect": "^1.14.0",
@@ -49,6 +48,7 @@
     "webpack": "^1.12.12"
   },
   "dependencies": {
+    "@babel/runtime": "^7.6.0",
     "axios": "^0.13.1",
     "deep-equal": "^1.0.1",
     "object-path-immutable": "^0.5.0",
